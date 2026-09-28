@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tester Notes — Simple, Permanent Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f3ec;
+    --card:#fffdf8;
+    --ink:#2a2620;
+    --muted:#8a8175;
+    --accent:#c2703d;
+    --accent-soft:#f0dcc9;
+    --line:#e6ddcf;
+    --danger:#b5482f;
+    --shadow:0 8px 30px rgba(60,45,25,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.15}
+
+  /* Hero */
+  .hero{
+    background:
+      radial-gradient(1200px 400px at 80% -10%, var(--accent-soft), transparent 60%),
+      linear-gradient(180deg,#fbf8f1,#f6f3ec);
+    border-bottom:1px solid var(--line);
+    padding:clamp(2.5rem,6vw,4.5rem) 1.25rem 2.5rem;
+  }
+  .hero-inner{max-width:900px;margin:0 auto;text-align:center}
+  .badge{
+    display:inline-flex;align-items:center;gap:.5rem;
+    background:var(--card);border:1px solid var(--line);
+    padding:.4rem .9rem;border-radius:999px;font-size:.8rem;
+    color:var(--muted);font-weight:500;box-shadow:var(--shadow);
+  }
+  .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--accent)}
+  .hero h1{font-size:clamp(2.2rem,7vw,3.6rem);margin:1.1rem 0 .6rem;letter-spacing:-.02em}
+  .hero h1 em{color:var(--accent);font-style:italic}
+  .hero p{color:var(--muted);font-size:clamp(1rem,2.5vw,1.15rem);max-width:560px;margin:0 auto}
+
+  main{max-width:900px;margin:0 auto;padding:2rem 1.25rem 4rem}
+
+  /* Composer */
+  .composer{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:1.4rem;
+    box-shadow:var(--shadow);
+    margin-top:-2.5rem;
+    position:relative;
+  }
+  .composer h2{font-size:1.25rem;margin-bottom:1rem}
+  .field{margin-bottom:1rem}
+  label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;color:var(--ink)}
+  input[type=text],textarea{
+    width:100%;font-family:inherit;font-size:1rem;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:.8rem .9rem;transition:border-color .2s,box-shadow .2s;
+  }
+  input[type=text]:focus,textarea:focus{
+    outline:none;border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  textarea{resize:vertical;min-height:110px;line-height:1.6}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  .btn{
+    font-family:inherit;font-weight:600;font-size:.95rem;
+    background:var(--accent);color:#fff;border:none;
+    padding:.8rem 1.5rem;border-radius:12px;cursor:pointer;
+    min-height:44px;transition:transform .12s,background .2s;
+  }
+  .btn:hover{background:#a95d31}
+  .btn:active{transform:scale(.97)}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .save-state{font-size:.82rem;color:var(--muted);min-height:1.2em;transition:opacity .3s}
+
+  /* List */
+  .list-head{display:flex;align-items:baseline;justify-content:space-between;margin:2.5rem 0 1.1rem;gap:1rem;flex-wrap:wrap}
+  .list-head h2{font-size:1.4rem}
+  .count{font-size:.85rem;color:var(--muted)}
+
+  .notes{display:grid;gap:1rem}
+  @media(min-width:680px){.notes{grid-template-columns:1fr 1fr}}
+
+  .note{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:1.2rem 1.2rem 1rem;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;gap:.5rem;
+    animation:pop .35s ease;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .note h3{font-size:1.15rem;letter-spacing:-.01em;word-break:break-word}
+  .note-body{white-space:pre-wrap;word-break:break-word;color:#443f37;font-size:.96rem}
+  .note-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:.6rem;border-top:1px dashed var(--line)}
+  .note-date{font-size:.78rem;color:var(--muted)}
+  .del{
+    background:none;border:1px solid var(--line);color:var(--danger);
+    font-family:inherit;font-weight:600;font-size:.82rem;
+    padding:.45rem .8rem;border-radius:10px;cursor:pointer;min-height:38px;
+    transition:background .2s,border-color .2s;
+  }
+  .del:hover{background:#fcefe9;border-color:var(--danger)}
+
+  .empty{
+    text-align:center;color:var(--muted);padding:3rem 1rem;
+    border:1px dashed var(--line);border-radius:16px;background:var(--card);
+  }
+  .empty .em{font-size:2.2rem;display:block;margin-bottom:.6rem}
+
+  /* How it works */
+  .how{
+    margin-top:3.5rem;background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:1.6rem;box-shadow:var(--shadow);
+  }
+  .how h2{font-size:1.2rem;margin-bottom:.8rem}
+  .how ol{padding-left:1.2rem;color:#4a453d}
+  .how li{margin-bottom:.4rem}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:2rem 1rem 1rem}
+
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+</style>
+<script id="factory-store-sdk">
+window.factory=(function(){
+var K="3f52d5ec-d286-4fdc-955e-337c21f1f338",U="https://canvbkibjgcnqowjtarf.supabase.co/functions/v1/app-market",A="sb_publishable_sMTQKIeFgT1vwjHnU7Gexg_8CCmhtxs";
+function call(b){b.appKey=K;return fetch(U,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+A},body:JSON.stringify(b)}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||("store "+r.status));return d;});});}
+var S={
+put:function(c,i,d){return call({op:"put",collection:c,id:String(i),data:d}).then(function(x){return x.doc?x.doc.data:null;});},
+get:function(c,i){return call({op:"get",collection:c,id:String(i)}).then(function(x){return x.doc?x.doc.data:null;});},
+list:function(c){return call({op:"list",collection:c}).then(function(x){return x.docs.map(function(d){return d.data;});});},
+remove:function(c,i){return call({op:"delete",collection:c,id:String(i)}).then(function(){return true;});},
+unlock:function(code){return call({op:"redeem",code:String(code)}).then(function(x){try{localStorage.setItem("factory_access",x.status);}catch(e){}return x.status;});},
+access:function(){try{return localStorage.getItem("factory_access")||"none";}catch(e){return "none";}}
+};
+var _c=null;try{var h=(location.hash||"").match(/factory_code=([a-z0-9-]+)/i);_c=h?h[1]:localStorage.getItem("factory_code");if(h){history.replaceState(null,"",location.pathname+location.search);}}catch(e){}
+var F={put:S.put,get:S.get,list:S.list,remove:S.remove,unlock:S.unlock,access:S.access};
+F.ready=_c?S.unlock(_c).then(function(s){try{if(s!=="invalid")localStorage.setItem("factory_code",_c);}catch(e){}return s;}).catch(function(){return S.access();}):Promise.resolve(S.access());
+return F;})();
+</script>
+<script id="factory-pay-sdk">
+(function(){
+var R="tester-notes-a-wv71",U="https://canvbkibjgcnqowjtarf.supabase.co/functions/v1/app-pay",P=String.fromCharCode(163);
+function call(b){return fetch(U,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.error||("pay "+r.status));return d;});});}
+function money(p){return P+(Number(p)/100).toFixed(2);}
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=String(x);return e;}
+function say(text,good){var b=document.getElementById("factory-pay-banner");if(!b){b=el("div");b.id="factory-pay-banner";b.setAttribute("role","status");b.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483000;max-width:520px;margin:0 auto;padding:14px 16px;border-radius:12px;font:600 15px/1.4 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35);cursor:pointer;";b.onclick=function(){b.remove();};document.body.appendChild(b);}b.style.background=good?"#0f5132":"#332b00";b.style.color="#fff";b.textContent=text;}
+var _p=null;function products(){if(!_p)_p=call({op:"products",repo:R});return _p;}
+function buy(id,btn){if(btn){btn.disabled=true;}return call({op:"checkout",product_id:id,return_url:location.origin+location.pathname}).then(function(d){location.href=d.url;}).catch(function(e){if(btn){btn.disabled=false;}say(e.message||"Payment could not be started. Nothing was taken.",false);});}
+function mount(host){if(!host||host.getAttribute("data-factory-pay-done"))return Promise.resolve();host.setAttribute("data-factory-pay-done","1");var want=(host.getAttribute("data-factory-pay")||"").trim().toLowerCase();
+return products().then(function(d){var list=(d.products||[]).filter(function(x){return !want||String(x.name).trim().toLowerCase()===want;});host.textContent="";
+list.forEach(function(x){var row=el("div","factory-pay-item");row.appendChild(el("span","factory-pay-name",x.name));if(x.description)row.appendChild(el("span","factory-pay-desc",x.description));row.appendChild(el("span","factory-pay-price",money(x.price_pence)));
+if(d.open){var b=el("button","factory-pay-btn","Pay "+money(x.price_pence));b.type="button";b.onclick=function(){buy(x.id,b);};row.appendChild(b);}else{row.appendChild(el("span","factory-pay-soon","Online payment opening soon"));}
+host.appendChild(row);});}).catch(function(){host.textContent="";});}
+function mountAll(){var n=document.querySelectorAll("[data-factory-pay]");for(var i=0;i<n.length;i++)mount(n[i]);}
+function back(){var m=(location.search||"").match(/[?&]paid=([A-Za-z0-9_]+)/);if(!m)return;var v=m[1];try{history.replaceState(null,"",location.pathname+location.hash);}catch(e){}
+if(v==="no"){say("Payment cancelled. Nothing was taken.",false);return;}if(v.indexOf("cs_")!==0)return;var tries=0;
+(function ask(){call({op:"order",session_id:v}).then(function(d){var o=d.order||{};if(o.status==="paid"){say("Paid, thank you: "+o.product_name+" "+money(o.gross_pence),true);try{window.dispatchEvent(new CustomEvent("factory:paid",{detail:{product:o.product_name,amount_pence:o.gross_pence}}));}catch(e){}}
+else if(o.status==="pending"&&++tries<8){setTimeout(ask,2000);}else if(o.status==="pending"){say("Thank you. Your payment is being confirmed.",true);}}).catch(function(){if(++tries<4)setTimeout(ask,2000);});})();}
+var st=document.createElement("style");st.textContent=":where(.factory-pay-item){display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:8px 0}:where(.factory-pay-name){font-weight:600}:where(.factory-pay-desc){flex-basis:100%;opacity:.8;font-size:.92em}:where(.factory-pay-price){margin-left:auto}:where(.factory-pay-btn){cursor:pointer;padding:.6em 1.1em;border-radius:.6em;border:0;font:inherit;font-weight:700}:where(.factory-pay-soon){opacity:.7;font-size:.9em}";document.head.appendChild(st);
+window.factory=window.factory||{};window.factory.pay={products:products,buy:buy,mount:mount};
+function go(){back();mountAll();}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
+})();
+</script>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="badge"><span class="dot" aria-hidden="true"></span>Saved permanently, in the cloud</span>
+      <h1>Tester <em>Notes</em></h1>
+      <p>A calm place to jot down what matters. Add a note, and it stays — safe, searchable to your eye, and always newest first.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="composer" aria-labelledby="composer-title">
+      <h2 id="composer-title">Write a new note</h2>
+      <form id="noteForm">
+        <div class="field">
+          <label for="title">Title</label>
+          <input type="text" id="title" name="title" placeholder="e.g. Ideas for Friday" maxlength="120" required>
+        </div>
+        <div class="field">
+          <label for="text">Note</label>
+          <textarea id="text" name="text" placeholder="Write your thoughts here…" maxlength="5000" required></textarea>
+        </div>
+        <div class="row">
+          <span class="save-state" id="saveState" aria-live="polite"></span>
+          <button class="btn" type="submit" id="saveBtn">Save note</button>
+        </div>
+      </form>
+    </section>
+
+    <div class="list-head">
+      <h2>Your notes</h2>
+      <span class="count" id="count">Loading…</span>
+    </div>
+    <div class="notes" id="notes" aria-live="polite"></div>
+
+    <section class="how">
+      <h2>How it works</h2>
+      <ol>
+        <li>Type a <strong>title</strong> and your <strong>note</strong>, then press <em>Save note</em>.</li>
+        <li>Every note is stored permanently in this app's cloud storage — close the tab and it will still be here next time.</li>
+        <li>Notes appear <strong>newest first</strong> so your latest thought is always on top.</li>
+        <li>Tap <em>Delete</em> on any note to remove it for good (you'll be asked to confirm).</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>Made with care · Your notes are yours to keep.</footer>
+
+<script>
+  const form = document.getElementById('noteForm');
+  const titleEl = document.getElementById('title');
+  const textEl = document.getElementById('text');
+  const saveBtn = document.getElementById('saveBtn');
+  const saveState = document.getElementById('saveState');
+  const notesEl = document.getElementById('notes');
+  const countEl = document.getElementById('count');
+
+  let notes = [];
+
+  function fmtDate(ts){
+    const d = new Date(ts);
+    return d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}) +
+      ' · ' + d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function flash(msg){
+    saveState.textContent = msg;
+    saveState.style.opacity = '1';
+    clearTimeout(flash._t);
+    flash._t = setTimeout(()=>{ saveState.style.opacity='0'; }, 2500);
+  }
+
+  function render(){
+    notes.sort((a,b)=> Number(b.id) - Number(a.id));
+    if(notes.length === 0){
+      notesEl.innerHTML = '<div class="empty"><span class="em" aria-hidden="true">🕊️</span>No notes yet. Your first thought will live here.</div>';
+      notesEl.style.gridTemplateColumns = '1fr';
+      countEl.textContent = 'No notes';
+      return;
+    }
+    notesEl.style.gridTemplateColumns = '';
+    countEl.textContent = notes.length + (notes.length === 1 ? ' note' : ' notes');
+    notesEl.innerHTML = notes.map(n => `
+      <article class="note">
+        <h3>${esc(n.title)}</h3>
+        <div class="note-body">${esc(n.text)}</div>
+        <div class="note-foot">
+          <span class="note-date">${fmtDate(Number(n.id))}</span>
+          <button class="del" data-id="${n.id}">Delete</button>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  async function load(){
+    try{
+      notes = await factory.list('notes');
+      if(!Array.isArray(notes)) notes = [];
+    }catch(e){
+      notes = [];
+      countEl.textContent = 'Could not load — showing what we have';
+    }
+    render();
+  }
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const title = titleEl.value.trim();
+    const text = textEl.value.trim();
+    if(!title || !text) return;
+
+    saveBtn.disabled = true;
+    flash('Saving…');
+    const id = String(Date.now());
+    const note = { id, title, text };
+    try{
+      await factory.put('notes', id, note);
+      notes.push(note);
+      render();
+      form.reset();
+      flash('Saved ✓');
+      titleEl.focus();
+    }catch(err){
+      flash('Could not save — please try again');
+    }finally{
+      saveBtn.disabled = false;
+    }
+  });
+
+  notesEl.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.del');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    if(!confirm('Delete this note permanently?')) return;
+    btn.disabled = true;
+    btn.textContent = 'Deleting…';
+    try{
+      await factory.remove('notes', id);
+      notes = notes.filter(n => n.id !== id);
+      render();
+      flash('Note deleted');
+    }catch(err){
+      btn.disabled = false;
+      btn.textContent = 'Delete';
+      flash('Could not delete — please try again');
+    }
+  });
+
+  load();
+</script>
+<div id="factory-provenance" style="padding:14px 16px;text-align:center;font:11px/1.7 system-ui,sans-serif;color:#888;opacity:.85;">&#9874; Built with <a href="https://thefactory.refereeinnovations.com" style="color:#888;">The Factory</a> using third-party AI tools &#183; the app owner is responsible for its content &#183; Standard: UK law, aligned with the UN Universal Declaration of Human Rights &#183; <a href="https://thefactory.refereeinnovations.com/terms.html" style="color:#888;">Terms</a></div>
+</body>
+</html>
